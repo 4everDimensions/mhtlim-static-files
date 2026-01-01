@@ -1,89 +1,43 @@
-// 定义你的静态文件映射
-const staticFiles = {
-  '/': `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>MHTL.IM STATIC</title>
-</head>
-<body>
-    <h1>MHTL.IM STATIC STORAGE</h1>
-</body>
-</html>
-  `,
-  '/index.html': `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>MHTL.IM STATIC</title>
-</head>
-<body>
-    <h1>MHTL.IM STATIC STORAGE</h1>
-</body>
-</html>
-  `,
-  '/api/data.json': JSON.stringify({
-    message: "Hello",
-    timestamp: new Date().toISOString()
-  })
-};
+import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
 
 export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-    const path = url.pathname;
-    
-    // 设置 CORS 头
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-      'Access-Control-Allow-Headers': '*',
-    };
-    
-    // 处理 OPTIONS 预检请求
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: corsHeaders,
+  async fetch(request, env, ctx) {
+    try {
+      // 1. 获取静态文件
+      const response = await getAssetFromKV({
+        request,
+        waitUntil: ctx.waitUntil.bind(ctx),
       });
-    }
-    
-    // 查找对应的文件
-    let content = staticFiles[path];
-    
-    // 如果没找到，尝试找带 .html 扩展名的
-    if (!content && !path.includes('.')) {
-      content = staticFiles[path + '.html'] || staticFiles[path + '/index.html'];
-    }
-    
-    if (content) {
-      // 根据文件类型设置 Content-Type
-      let contentType = 'text/plain';
-      if (path.endsWith('.html')) contentType = 'text/html; charset=utf-8';
-      if (path.endsWith('.css')) contentType = 'text/css; charset=utf-8';
-      if (path.endsWith('.js')) contentType = 'application/javascript; charset=utf-8';
-      if (path.endsWith('.json')) contentType = 'application/json; charset=utf-8';
-      if (path.endsWith('.png')) contentType = 'image/png';
-      if (path.endsWith('.jpg') || path.endsWith('.jpeg')) contentType = 'image/jpeg';
-      if (path.endsWith('.gif')) contentType = 'image/gif';
-      if (path.endsWith('.svg')) contentType = 'image/svg+xml';
-      if (path.endsWith('.avif')) contentType = 'image/avif';
       
-      return new Response(content, {
+      // 2. 克隆响应以便修改头部
+      const newResponse = new Response(response.body, response);
+      
+      // 3. 设置 CORS 头（允许所有域名访问）
+      newResponse.headers.set('Access-Control-Allow-Origin', '*');
+      
+      // 4. 处理 OPTIONS 预检请求
+      if (request.method === 'OPTIONS') {
+        return new Response(null, {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Max-Age': '86400',
+          },
+        });
+      }
+      
+      return newResponse;
+      
+    } catch (error) {
+      // 文件未找到，返回 404
+      return new Response('文件未找到: ' + new URL(request.url).pathname, {
+        status: 404,
         headers: {
-          'Content-Type': contentType,
-          ...corsHeaders,
-          'Cache-Control': 'public, max-age=36000', // 缓存1小时
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Access-Control-Allow-Origin': '*',
         },
       });
     }
-    
-    // 文件未找到
-    return new Response('404 Not Found: ' + path, {
-      status: 404,
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        ...corsHeaders,
-      },
-    });
   }
 };
