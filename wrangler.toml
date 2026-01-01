@@ -1,8 +1,8 @@
 # wrangler.toml
 
 name = "mhtlim-static"
-main = "./index.js"
+main = "index.js"
 compatibility_date = "2026-01-01"
 
-#[site]
-#bucket = "./"
+[site]
+bucket = "./"
