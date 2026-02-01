@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "mhtlim-static",
+	"name": "mhtlim-static-files",
 	"compatibility_date": "2026-01-01",
 	"assets": {
 		// The path to the directory containing the `index.html` file to be served at `/`
