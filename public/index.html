@@ -1,12 +1,101 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello, World!</title>
-	</head>
-	<body>
-		<h1 id="heading">Hello, World!</h1>
-		<p>This page comes from a static asset stored at `public/index.html` as configured in `wrangler.jsonc`.</p>
-	</body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mhtl.IM 静态仓库</title>
+    <style>
+        /* 全局重置与深色主题基础配置（无渐变色） */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* 纯深色主题，无任何渐变色 */
+            background-color: #121212;
+            color: #f5f5f5;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 标题炫酷动画样式 */
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(-50px) scale(0.8);
+            animation: titleAnimate 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            /* 无渐变色，纯文字阴影增强视觉效果 */
+            text-shadow: 0 0 8px #ffffff, 0 0 16px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 正文段落炫酷动画样式 */
+        .content-paragraph {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            max-width: 800px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: paragraphAnimate 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            animation-delay: 0.8s;
+            /* 无渐变色，轻微文字阴影提升可读性 */
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 标题动画：从上方隐藏、缩小状态，过渡到正常显示 */
+        @keyframes titleAnimate {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 段落动画：从下方隐藏状态，过渡到正常显示 */
+        @keyframes paragraphAnimate {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 页面加载完成后，添加轻微的页面呼吸效果（增强炫酷感，无渐变色） */
+        @keyframes pageBreath {
+            0% {
+                background-color: #121212;
+            }
+            50% {
+                background-color: #181818;
+            }
+            100% {
+                background-color: #121212;
+            }
+        }
+
+        body.loaded {
+            animation: pageBreath 8s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="main-title">Mhtl.IM 静态仓库</h1>
+    <p class="content-paragraph">这个首页是AI生成的，因为能工智人有时确实比不上人工智能。</p>
+
+    <script>
+        // 页面加载完成后，添加loaded类触发页面呼吸动画，增强炫酷感
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+    </script>
+</body>
 </html>
